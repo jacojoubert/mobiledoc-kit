@@ -550,9 +550,10 @@ test('inserting multiple spaces renders them with nbsps', (assert) => {
   editor = new Editor({mobiledoc});
   editor.render(editorElement);
 
-  Helpers.dom.insertText(editor, '   ');
+  let sp = ' ', nbsp = NO_BREAK_SPACE;
+  Helpers.dom.insertText(editor, sp + sp + sp);
   assert.equal($('#editor p:eq(0)').text(),
-               `${NO_BREAK_SPACE}${NO_BREAK_SPACE}${NO_BREAK_SPACE}`,
+               nbsp + nbsp + nbsp,
                'correct nbsps in text');
 });
 

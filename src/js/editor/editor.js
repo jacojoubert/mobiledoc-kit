@@ -37,7 +37,7 @@ import {
   setClipboardCopyData
 } from '../utils/paste-utils';
 import { DIRECTION } from 'mobiledoc-kit/utils/key';
-import { TAB, SPACE } from 'mobiledoc-kit/utils/characters';
+// import { TAB, SPACE } from 'mobiledoc-kit/utils/characters';
 import assert from '../utils/assert';
 import MutationHandler from 'mobiledoc-kit/editor/mutation-handler';
 import { MOBILEDOC_VERSION } from 'mobiledoc-kit/renderers/mobiledoc';
@@ -45,7 +45,7 @@ import EditHistory from 'mobiledoc-kit/editor/edit-history';
 
 export const EDITOR_ELEMENT_CLASS_NAME = '__mobiledoc-editor';
 
-const ELEMENT_EVENTS = ['keydown', 'keyup', 'cut', 'copy', 'paste'];
+const ELEMENT_EVENTS = ['keydown', 'keyup', 'cut', 'copy', 'paste', 'keypress'];
 const DOCUMENT_EVENTS= ['mouseup'];
 
 const defaults = {
@@ -596,6 +596,17 @@ class Editor {
     setTimeout(() => this._reportSelectionState(), 0);
   }
 
+  handleKeypress(e) {
+    let key = Key.fromEvent(e);
+    if (key.isPrintable()) {
+      e.preventDefault();
+      this.run(postEditor => {
+        postEditor.insertText(this.range.head, key.toString(), this._currentMarkups);
+        this._currentMarkups = [];
+      });
+    }
+  }
+
   handleKeyup() {
     this._reportSelectionState();
   }
@@ -619,6 +630,16 @@ class Editor {
       postEditor.insertSectionBefore(this.post.sections, section);
       postEditor.setRange(Range.fromSection(section));
     });
+  }
+
+  toggleMarkup(markup) {
+    markup = this.post.builder.createMarkup(markup);
+    if (this.range.isCollapsed) {
+      this._currentMarkups = this._currentMarkups || [];
+      this._currentMarkups.push(markup);
+    } else {
+      this.run(postEditor => postEditor.toggleMarkup(markup));
+    }
   }
 
   handleKeydown(event) {
@@ -675,11 +696,11 @@ class Editor {
           break;
         }
 
-        let shouldPreventDefault = isCollapsed && range.head.section.isCardSection;
+        // let shouldPreventDefault = isCollapsed && range.head.section.isCardSection;
 
         let didEdit = false;
-        let isMarkerable = range.head.section.isMarkerable;
-        let isVisibleWhitespace = isMarkerable && (key.isTab() || key.isSpace());
+        // let isMarkerable = range.head.section.isMarkerable;
+        // let isVisibleWhitespace = isMarkerable && (key.isTab() || key.isSpace());
 
         this.run(postEditor => {
           if (!isCollapsed) {
@@ -687,6 +708,7 @@ class Editor {
             didEdit = true;
           }
 
+          /*
           if (isVisibleWhitespace) {
             let toInsert = key.isTab() ? TAB : SPACE;
             shouldPreventDefault = true;
@@ -710,14 +732,21 @@ class Editor {
             postEditor.setRange(new Range(nextPosition));
           }
 
+          */
+
           if (!didEdit) {
             // this ensures we don't push an empty snapshot onto the undo stack
             postEditor.cancelSnapshot();
           }
+
+          if (nextPosition && nextPosition !== range.head) {
+            didEdit = true;
+            postEditor.setRange(new Range(nextPosition));
+          }
         });
-        if (shouldPreventDefault) {
-          event.preventDefault();
-        }
+        //if (shouldPreventDefault) {
+        //  event.preventDefault();
+        //}
         break;
     }
   }

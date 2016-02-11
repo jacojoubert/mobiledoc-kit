@@ -1,5 +1,5 @@
 import Position from '../utils/cursor/position';
-import { forEach, filter } from '../utils/array-utils';
+import { forEach, filter, contains } from '../utils/array-utils';
 import { DIRECTION } from '../utils/key';
 import LifecycleCallbacksMixin from '../utils/lifecycle-callbacks';
 import mixin from '../utils/mixin';
@@ -745,13 +745,18 @@ class PostEditor {
     return nextPosition;
   }
 
-  insertText(position, text) {
+  insertText(position, text, markups=[]) {
     let { section } = position;
     if (!section.isMarkerable) { return; }
 
-    let markups = position.marker && position.marker.markups;
-    markups = markups || [];
-    let marker = this.builder.createMarker(text, markups.slice());
+    let existingMarkups = position.marker && position.marker.markups.slice();
+    existingMarkups = existingMarkups || [];
+    markups.forEach(markup => {
+      if (!contains(existingMarkups, markup)) {
+        existingMarkups.push(markup);
+      }
+    });
+    let marker = this.builder.createMarker(text, existingMarkups);
     return this.insertMarkers(position, [marker]);
   }
 

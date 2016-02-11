@@ -8,38 +8,22 @@ import Browser from '../utils/browser';
 export const DEFAULT_KEY_COMMANDS = [{
   str: 'META+B',
   run(editor) {
-    if (editor.range.isCollapsed) {
-      document.execCommand('bold', false, null);
-    } else {
-      editor.run(postEditor => postEditor.toggleMarkup('strong'));
-    }
+    editor.toggleMarkup('strong');
   }
 }, {
   str: 'CTRL+B',
   run(editor) {
-    if (editor.range.isCollapsed) {
-      document.execCommand('bold', false, null);
-    } else {
-      editor.run(postEditor => postEditor.toggleMarkup('strong'));
-    }
+    editor.toggleMarkup('strong');
   }
 }, {
   str: 'META+I',
   run(editor) {
-    if (editor.range.isCollapsed) {
-      document.execCommand('italic', false, null);
-    } else {
-      editor.run(postEditor => postEditor.toggleMarkup('em'));
-    }
+    editor.toggleMarkup('em');
   }
 }, {
   str: 'CTRL+I',
   run(editor) {
-    if (editor.range.isCollapsed) {
-      document.execCommand('italic', false, null);
-    } else {
-      editor.run(postEditor => postEditor.toggleMarkup('em'));
-    }
+    editor.toggleMarkup('em');
   }
 }, {
   str: 'CTRL+K',

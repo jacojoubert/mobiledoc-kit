@@ -89,7 +89,7 @@ testStatefulCommand({
 testStatefulCommand({
   modifier: MODIFIERS.CTRL,
   key: 'B',
-  command: 'command-B',
+  command: 'ctrl-B',
   markupName: 'strong'
 });
 
@@ -103,7 +103,7 @@ testStatefulCommand({
 testStatefulCommand({
   modifier: MODIFIERS.CTRL,
   key: 'I',
-  command: 'command-I',
+  command: 'ctrl-I',
   markupName: 'em'
 });
 
