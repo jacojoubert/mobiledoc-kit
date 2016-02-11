@@ -38,6 +38,7 @@ import {
 } from '../utils/paste-utils';
 import { DIRECTION } from 'mobiledoc-kit/utils/key';
 // import { TAB, SPACE } from 'mobiledoc-kit/utils/characters';
+import { TAB } from 'mobiledoc-kit/utils/characters';
 import assert from '../utils/assert';
 import MutationHandler from 'mobiledoc-kit/editor/mutation-handler';
 import { MOBILEDOC_VERSION } from 'mobiledoc-kit/renderers/mobiledoc';
@@ -698,14 +699,21 @@ class Editor {
 
         // let shouldPreventDefault = isCollapsed && range.head.section.isCardSection;
 
+        let shouldPreventDefault = false;
         let didEdit = false;
-        // let isMarkerable = range.head.section.isMarkerable;
+        let isMarkerable = range.head.section.isMarkerable;
         // let isVisibleWhitespace = isMarkerable && (key.isTab() || key.isSpace());
 
         this.run(postEditor => {
           if (!isCollapsed) {
             nextPosition = postEditor.deleteRange(range);
             didEdit = true;
+          }
+
+          if (isMarkerable && key.isTab()) {
+            shouldPreventDefault = true;
+            didEdit = true;
+            nextPosition = postEditor.insertText(nextPosition, TAB);
           }
 
           /*
@@ -744,9 +752,9 @@ class Editor {
             postEditor.setRange(new Range(nextPosition));
           }
         });
-        //if (shouldPreventDefault) {
-        //  event.preventDefault();
-        //}
+        if (shouldPreventDefault) {
+          event.preventDefault();
+        }
         break;
     }
   }
