@@ -12,7 +12,8 @@ export const VALID_MARKUP_TAGNAMES = [
   'u',
   'sub', // subscript
   'sup', // superscript
-  's'    // strikethrough
+  's',    // strikethrough
+  'code'
 ].map(normalizeTagName);
 
 export const VALID_ATTRIBUTES = [
